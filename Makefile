@@ -98,7 +98,7 @@ build:
 push:
 	@echo "There is no Docker image push process since this container is provided by a third-party from official sources."
 
-publish: publish-service publish-service-policy publish-deployment-policy agent-run
+publish: publish-service publish-service-policy publish-deployment-policy
 
 # Pull, not push, Docker image since provided by third party
 publish-service:
