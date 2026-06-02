@@ -1,6 +1,26 @@
+# macOS
 .DS_Store
 **/.DS_Store
-.vscode
+
+# Editor directories
+.vscode/
 **/.vscode
-ATH_TO_YOUR_CONFIG
-**/ATH_TO_YOUR_CONFIG
+.idea/
+
+# Bob Shell artifacts
+.bob/
+
+# Environment and credentials
+.env
+*.env
+horizon.env
+**/horizon.env
+
+# Logs and temporary files
+*.log
+*.tmp
+.tmp/
+
+# Backup files
+*.bak
+*~

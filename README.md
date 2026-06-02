@@ -1,7 +1,7 @@
 # service-kubearmor-security
 ![](https://img.shields.io/github/license/open-horizon-services/service-kubearmor-security) ![](https://img.shields.io/badge/architecture-x86,_arm64-green) ![Contributors](https://img.shields.io/github/contributors/open-horizon-services/service-kubearmor-security.svg)
 
-This is an Open Horizon configuration to deploy a vanilla instance of the open-source [KubeArmor]() software.
+This is an Open Horizon configuration to deploy a vanilla instance of the open-source [KubeArmor](https://kubearmor.io/) software.
 
 ## Prerequisites
 
@@ -58,7 +58,31 @@ curl -sSL https://github.com/open-horizon/anax/releases/latest/download/agent-in
 
 To check how to operate KubeArmor, please follow [this ref](https://open-horizon.github.io/docs/kubearmor-integration/docs/README/).
 
-To create [the service definition](https://github.com/open-horizon/examples/blob/master/edge/services/helloworld/CreateService.md#build-publish-your-hw), publish it to the hub, and then form an agreement to download and run KubeArmor, enter `make publish`.  When installation is complete and an agreement has been formed, exit the watch command with Control-C.
+To create [the service definition](https://github.com/open-horizon/examples/blob/master/edge/services/helloworld/CreateService.md#build-publish-your-hw) and publish it to the hub, enter `make publish`. This will publish the service definition, service policy, and deployment policy to the hub.
+
+To register your edge node and form an agreement to download and run KubeArmor, enter `make agent-run`. This will register the node with the hub and start a watch command showing agreement formation progress. When installation is complete and an agreement has been formed, exit the watch command with Control-C.
+
+Alternatively, you can run both steps together:
+```shell
+make publish && make agent-run
+```
+
+### Docker Image Versions
+
+This service uses the `stable` tag by default, which automatically tracks the latest stable release of KubeArmor. The `stable` tag currently points to version v1.7.3.
+
+To use a different version, set the `DOCKER_IMAGE_VERSION` environment variable before publishing:
+
+```shell
+export DOCKER_IMAGE_VERSION=v1.7.3  # Pin to specific version
+make publish
+```
+
+Available version options:
+- `stable` - Latest stable release (recommended, auto-updates)
+- `latest` - Most recent build (may include pre-release versions)
+- `v1.7.3` - Specific version (for reproducibility)
+- See [KubeArmor DockerHub](https://hub.docker.com/r/kubearmor/kubearmor/tags) for all available tags
 
 ## Advanced details
 
@@ -72,15 +96,15 @@ The Makefile includes several targets to assist you in inspecting what is happen
 
 `make deploy-check` to see if the properties and constraints that you've configured match each other to potentially form an agreement.
 
-`make test` to see if the web server is responding.
+`make test` to check if the KubeArmor service is responding (note: this target may need updating for the correct port).
 
 `make attach` to connect to the running container and open a shell inside it.
 
 ### All Makefile targets
 
-* `default` - init run browse
-* `init` - optionally create the docker volume
-* `run` - manually run the kubearmor container locally as a test
+* `default` - init run
+* `init` - create the docker volume for KubeArmor configuration
+* `run` - manually run the kubearmor-init and kubearmor containers locally as a test
 * `check` - view current settings
 * `stop` - halt a locally-run container
 * `dev` - manually run kubearmor locally and connect to a terminal in the container
@@ -88,16 +112,16 @@ The Makefile includes several targets to assist you in inspecting what is happen
 * `test` - request the web UI from the terminal to confirm that it is running and available
 * `clean` - remove the container image and docker volume
 * `distclean` - clean (see above) AND unregister the node and remove the service files from the hub
-* `build` - N/A
-* `push` - N/A
+* `build` - Not applicable (uses third-party pre-built image from DockerHub)
+* `push` - Not applicable (uses third-party pre-built image from DockerHub)
 * `publish-service` - Publish the service definition file to the hub in your organization
 * `remove-service` - Remove the service definition file from the hub in your organization
 * `publish-service-policy` - Publish the [service policy](https://github.com/open-horizon/examples/blob/master/edge/services/helloworld/PolicyRegister.md#service-policy) file to the hub in your org
 * `remove-service-policy` - Remove the service policy file from the hub in your org
 * `publish-deployment-policy` - Publish a [deployment policy](https://github.com/open-horizon/examples/blob/master/edge/services/helloworld/PolicyRegister.md#deployment-policy) for the service to the hub in your org
 * `remove-deployment-policy` - Remove a deployment policy for the service from the hub in your org
-* `agent-run` - register your agent's [node policy](https://github.com/open-horizon/examples/blob/master/edge/services/helloworld/PolicyRegister.md#node-policy) with the hub
-* `publish` - Publish the service def, service policy, deployment policy, and then register your agent
+* `agent-run` - register your agent's [node policy](https://github.com/open-horizon/examples/blob/master/edge/services/helloworld/PolicyRegister.md#node-policy) with the hub and watch for agreement formation
+* `publish` - Publish the service definition, service policy, and deployment policy to the hub (does NOT register the agent - use `agent-run` separately)
 * `agent-stop` - unregister your agent with the hub, halting all agreements and stopping containers
 * `deploy-check` - confirm that a registered agent is compatible with the service and deployment
 * `log` - check the agent event logs
